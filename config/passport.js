@@ -1,52 +1,47 @@
-var passport = require('passport'),
-var GoodreadsStrategy = require('passport-goodreads');
-
-var User = require('../models/users');
-var configAuth = require('./configAuth');
+var passport = require('passport');
+var facebookStrategy = require('passport-facebook').Strategy;
+var LocalStrategy = require('passport-local').Strategy;
+var User = require('../models/user');
+var configAuth = require('./authConfig');
 
 module.exports = function(app, passport){
-
-	//SerializeUser
+	//Serialize User
 	passport.serializeUser(function (user, done){
-		return done(null, user.id);
+		done(null, user.id);
 	});
-	//DeSerializeUser
-	passport.deserializeUser(function (id, done){
-		User.findById(id, function (err, user){
-			done(err, user);
-		})
-	});
-	passport.use('goodreads', new GoodreadsStrategy({
-		clientID     : configAuth.goodreadsAuth.clientID,
-        clientSecret  : configAuth.goodreadsAuth.clientSecret,
-        callbackURL     : configAuth.goodreadsAuth.callbackURL
-	}));
-
-	function (token, tokenSecret, profile, done){
-		process.nextTick(function(){
-			User.findOne({ 'goodreads.id' : profile.id }, function(err, user) {
-                // if there is an error, stop everything and return that
-                // ie an error connecting to the database
-                if (err)
-                    return done(err);
-                // if the user is found then log them in
-                if (user) {
-                    return done(null, user); // user found, return that user
-                } else {
-                    // if there is no user, create them
-                    var newUser                 = new User();
-                    newUser.goodreads.id          = profile.id;
-                    newUser.goodreads.token       = profile.id;
-                    newUser.goodreads.name    = profile._json.name;
-                    newUser.goodreads.img = profile.image;
-                    // save our user into the database
-                    newUser.save(function(err) {
-                        if (err)
-                            throw err;
-                        return done(null, newUser);
-                    });
-                }
-            });
-		})
-	}
+	//Deserialize User
+	passport.deserializeUser(function (id, done) {
+      User.findById(id, function (err, user) {
+            done(err, user);
+        });
+    });
+	passport.use(new LocalStrategy(
+        {passReqToCallback: true},
+        function (req, username, password, done){
+            process.nextTick(function() {
+                var profile = req.body;
+                User.findOne({'facebook.id' : profile.id}, function (err, user) {
+                    if(err) return err;
+                    if(user){
+                        return done(null, user);
+                    }else{
+                        var newUser                 = new User();
+                        newUser.facebook.id         = profile.id;
+                        newUser.facebook.firstName  = profile.first_name;
+                        newUser.facebook.lastName   = profile.last_name;
+                        newUser.facebook.token      = profile.id;
+                        newUser.email               = profile.email;
+                        newUser.facebook.img        = profile.picture.data.url;
+                        newUser.loc = { type: "Point", coordinates: [ profile.position.latitude, profile.position.longitude ] };
+                        // Save user into the database
+                        newUser.save(function(err) {
+                            if (err)
+                                throw err;
+                            return done(null, newUser);
+                        });
+                    } 
+                })
+            })
+        }
+    ));
 }

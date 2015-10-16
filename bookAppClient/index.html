@@ -1,0 +1,36 @@
+<html>
+  <head>
+  	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  	<meta name="apple-mobile-web-app-capable" content="yes">
+  	<meta name="mobile-web-app-capable" content="yes">
+  	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  	<meta charset="utf-8">
+	<link href='http://fonts.googleapis.com/css?family=Roboto:400,300,500' rel='stylesheet' type='text/css'>
+	<link href="/assets/css/style.css" rel="stylesheet" type="text/css">
+  <link href="/assets/css/select-box.css" rel="stylesheet" type="text/css">
+
+  
+	<link rel="stylesheet" type="text/css" href="/assets/css/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/node_modules/material-design-lite/material.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <!--script type="text/javascript" src="sdk.js"></script-->
+  <script src="/node_modules/material-design-lite/material.min.js"></script>
+  </head>
+  <body>
+    <div id='root'></div>
+    <script type="text/javascript">
+    var coordinates;
+    </script>
+    <script type="text/javascript">
+    (function(d, s, id){
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/en_US/sdk.js";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+  </script>
+  <script src="/static/bundle.js"></script>
+  
+  </body>
+</html>
